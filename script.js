@@ -28,17 +28,36 @@ taskInput.addEventListener('keypress', function(event) {
     }
 });
 
-// triggered when an item is dragged over a valid drop target
-todoList.addEventListener('dragover', function(event) {
-    event.preventDefault(); // called to prevent the browser's default behavior not to allow dropping
+doneList.addEventListener('dragover', function(event) {
+    event.preventDefault();
+    doneList.classList.add('drag-over');
+    // Show placeholder if there are no tasks in doneList
+    if (doneList.querySelectorAll('.task').length === 0) {
+        doneList.querySelector('.placeholder').style.display = 'block';
+    }
 });
 
-// triggered when item is dropped into a valid drop target
+doneList.addEventListener('dragleave', function(event) {
+    doneList.classList.remove('drag-over');
+    // Hide placeholder
+    doneList.querySelector('.placeholder').style.display = 'none';
+});
+
+doneList.addEventListener('drop', function(event){
+    const taskItem = document.querySelector('.dragging');
+    if (taskItem && doneList.classList.contains('drag-over')) {
+        doneList.classList.remove('drag-over');
+        doneList.appendChild(taskItem);
+    }
+});
+
+todoList.addEventListener('dragover', function(event){
+    event.preventDefault();
+});
+
 todoList.addEventListener('drop', function(event) {
-    const taskItem = document.querySelector('.dragging');  // select element with class .dragging
-    // if task item exists ie element is being dragged
-    if (taskItem) {
-        todoList.removeChild(taskItem); // remove item from todo list
-        doneList.appendChild(taskItem); // add item to done list
+    const taskItem = document.querySelector('.dragging');
+    if (taskItem && !doneList.classList.contains('drag-over')) {
+        todoList.appendChild(taskItem);
     }
 });
