@@ -66,8 +66,17 @@ todoList.addEventListener('drop', function(event) {
     }
 });
 
-// function to clear done list 
+// function to clear done list, keeping placeholder text
 function deleteChildren () {
     let list = document.getElementById('done-list');
-    [...list.children].forEach(c => list.removeChild(c));
+    [...list.children].forEach(c => {
+        if (!c.classList.contains('placeholder')) {
+            list.removeChild(c);
+        }
+    });
 }
+
+// if clicked, call delete children
+document.getElementById('clear-done-button').addEventListener('click', function() {
+    deleteChildren();
+});
