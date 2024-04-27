@@ -50,6 +50,7 @@ doneList.addEventListener('drop', function(event){
     if (taskItem && doneList.classList.contains('drag-over')) {
         doneList.classList.remove('drag-over');
         doneList.appendChild(taskItem);                             // add taskItem into the done list
+        doneList.querySelector('.placeholder').style.display = 'none';  // try to hide placeholder after dropping
     }
 });
 
@@ -69,11 +70,8 @@ todoList.addEventListener('drop', function(event) {
 // function to clear done list, keeping placeholder text
 function deleteChildren () {
     let list = document.getElementById('done-list');
-    [...list.children].forEach(c => {
-        if (!c.classList.contains('placeholder')) {
-            list.removeChild(c);
-        }
-    });
+    let tasks = list.querySelectorAll('.task');
+    [...tasks].forEach(c => list.removeChild(c));
 }
 
 // if clicked, call delete children
