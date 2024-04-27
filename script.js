@@ -45,17 +45,20 @@ doneList.addEventListener('dragleave', function(event) {
 });
 
 doneList.addEventListener('drop', function(event){
-    const taskItem = document.querySelector('.dragging');
+    const taskItem = document.querySelector('.dragging');           // get what we are dragging
+    // remove drag-over when dropping taskItem into new list
     if (taskItem && doneList.classList.contains('drag-over')) {
         doneList.classList.remove('drag-over');
-        doneList.appendChild(taskItem);
+        doneList.appendChild(taskItem);                             // add taskItem into the done list
     }
 });
 
+// prevent browser default behavior when dragging taskItem over list
 todoList.addEventListener('dragover', function(event){
     event.preventDefault();
 });
 
+// if we drop dragged taskItem back into todo list
 todoList.addEventListener('drop', function(event) {
     const taskItem = document.querySelector('.dragging');
     if (taskItem && !doneList.classList.contains('drag-over')) {
