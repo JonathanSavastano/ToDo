@@ -61,3 +61,6 @@ todoList.addEventListener('drop', function(event) {
         todoList.appendChild(taskItem);
     }
 });
+
+// TODO: Currently, when you drag an item over the placeholder text in the Done list, the placeholder disappears even if 
+//       you stop dragging over it. But, it does not disappear if you drop the item into the done list. 
