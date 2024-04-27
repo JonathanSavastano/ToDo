@@ -1,7 +1,8 @@
-const taskInput = document.getElementById('task-input');
-const todoList = document.getElementById('todo-list');
-const doneList = document.getElementById('done-list');
+const taskInput = document.getElementById('task-input');  // get task-input element
+const todoList = document.getElementById('todo-list');    // get todo-list element
+const doneList = document.getElementById('done-list');    // get done-list element
 
+// function for the input text box
 taskInput.addEventListener('keypress', function(event) {
     // if enter is pressed 
     if (event.key === 'Enter') {
@@ -29,7 +30,7 @@ taskInput.addEventListener('keypress', function(event) {
 });
 
 doneList.addEventListener('dragover', function(event) {
-    event.preventDefault();
+    event.preventDefault();  // prevents default browser behavior (doesn't allow dragging)
     doneList.classList.add('drag-over');
     // Show placeholder if there are no tasks in doneList
     if (doneList.querySelectorAll('.task').length === 0) {
@@ -39,8 +40,8 @@ doneList.addEventListener('dragover', function(event) {
 
 doneList.addEventListener('dragleave', function(event) {
     doneList.classList.remove('drag-over');
-    // Hide placeholder
-    doneList.querySelector('.placeholder').style.display = 'none';
+    // Hide placeholder commented out to prevent bug
+    // doneList.querySelector('.placeholder').style.display = 'none';
 });
 
 doneList.addEventListener('drop', function(event){
@@ -61,6 +62,3 @@ todoList.addEventListener('drop', function(event) {
         todoList.appendChild(taskItem);
     }
 });
-
-// TODO: Currently, when you drag an item over the placeholder text in the Done list, the placeholder disappears even if 
-//       you stop dragging over it. But, it does not disappear if you drop the item into the done list. 

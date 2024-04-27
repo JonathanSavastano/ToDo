@@ -27,4 +27,7 @@ body {
 .input-container {
     padding: 20px;
     background-color: #00246b;
+    position: fixed;
+    top: 10px;
+    right: 10px;
 }
