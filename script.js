@@ -72,6 +72,8 @@ function deleteChildren () {
     let list = document.getElementById('done-list');
     let tasks = list.querySelectorAll('.task');
     [...tasks].forEach(c => list.removeChild(c));
+    let placeholder = list.querySelector('.placeholder');
+    placeholder.style.display = 'block'; // Show placeholder
 }
 
 // if clicked, call delete children
