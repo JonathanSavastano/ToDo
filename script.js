@@ -65,3 +65,9 @@ todoList.addEventListener('drop', function(event) {
         todoList.appendChild(taskItem);
     }
 });
+
+// function to clear done list 
+function deleteChildren () {
+    let list = document.getElementById('done-list');
+    [...list.children].forEach(c => list.removeChild(c));
+}
