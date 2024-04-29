@@ -2,81 +2,109 @@ const taskInput = document.getElementById('task-input');  // get task-input elem
 const todoList = document.getElementById('todo-list');    // get todo-list element
 const doneList = document.getElementById('done-list');    // get done-list element
 
-// function for the input text box
-taskInput.addEventListener('keypress', function(event) {
-    // if enter is pressed 
-    if (event.key === 'Enter') {
-        const taskText = taskInput.value.trim(); // remove whitespace
-
-        // check to see if taskText is empty then do something
-        if (taskText != '') {
-            const taskItem = document.createElement('li'); // create a list element
-            taskItem.classList.add('task');                // add the task item to the list
-            taskItem.textContent = taskText;               // the text content equals the task text
-            taskItem.draggable = true;                     // we can drag it
-            // start dragging
-            taskItem.addEventListener('dragstart', function() {
-                taskItem.classList.add('dragging');
-            });
-            // end dragging
-            taskItem.addEventListener('dragend', function() {
-                taskItem.classList.remove('dragging')
-            });
-            // append item to list
+// check for saved tasks in local storage and load them
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    savedTasks.forEach(task => {
+        const taskItem = createTaskElement(task);
+        if (task.completed && !task.querySelector('.placeholder')) {
+            doneList.appendChild(taskItem);
+        } else {
             todoList.appendChild(taskItem);
+        }
+    });
+});
+
+// function to create a task element
+function createTaskElement(task) {
+    const taskItem = document.createElement('li');
+    taskItem.classList.add('task');
+    taskItem.textContent = task.text;
+    taskItem.draggable = true;
+    taskItem.addEventListener('dragstart', function() {
+        taskItem.classList.add('dragging');
+    });
+    taskItem.addEventListener('dragend', function() {
+        taskItem.classList.remove('dragging');
+    });
+    return taskItem;
+}
+
+// function to add task
+function addTask(taskText) {
+    const taskItem = createTaskElement({ text: taskText });
+    todoList.appendChild(taskItem);
+    saveTasks();
+}
+
+// function to save tasks to local storage
+function saveTasks() {
+    const tasks = [];
+    [...todoList.children].forEach(task => tasks.push({ text: task.textContent, completed: false}));
+    [...doneList.children].forEach(task => tasks.push({ text: task.textContent, completed: true}));
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// function to clear tasks from done list
+function deleteChildren () {
+    let tasks = doneList.querySelectorAll('.task');
+    tasks.forEach(task => doneList.removeChild(task));
+    const placeholder = doneList.querySelector('.placeholder');
+    placeholder.style.display = 'block';
+}
+
+// event listener for adding a new task
+taskInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        const taskText = taskInput.value.trim();
+        if (taskText !== '') {
+            addTask(taskText);
             taskInput.value = '';
         }
     }
 });
 
-doneList.addEventListener('dragover', function(event) {
-    event.preventDefault();  // prevents default browser behavior (doesn't allow dragging)
-    doneList.classList.add('drag-over');
-    // Show placeholder if there are no tasks in doneList
-    if (doneList.querySelectorAll('.task').length === 0) {
-        doneList.querySelector('.placeholder').style.display = 'block';
-    }
+// event listener for clearing done tasks
+document.getElementById('clear-done-button').addEventListener('click', function() {
+    deleteChildren();
+    //const list = document.getElementById('done-list');
+    //const placeholder = document.querySelector('.placeholder');
+    //if (list.children.length > 1) {
+    //    placeholder.style.display = 'none';
+    //}
+    saveTasks();
 });
 
-doneList.addEventListener('dragleave', function(event) {
-    doneList.classList.remove('drag-over');
-    // Hide placeholder commented out to prevent bug
-    // doneList.querySelector('.placeholder').style.display = 'none';
-});
-
-doneList.addEventListener('drop', function(event){
-    const taskItem = document.querySelector('.dragging');           // get what we are dragging
-    // remove drag-over when dropping taskItem into new list
-    if (taskItem && doneList.classList.contains('drag-over')) {
-        doneList.classList.remove('drag-over');
-        doneList.appendChild(taskItem);                             // add taskItem into the done list
-        doneList.querySelector('.placeholder').style.display = 'none';  // try to hide placeholder after dropping
-    }
-});
-
-// prevent browser default behavior when dragging taskItem over list
+// event listeners for drag and drop functionality
 todoList.addEventListener('dragover', function(event){
     event.preventDefault();
 });
 
-// if we drop dragged taskItem back into todo list
 todoList.addEventListener('drop', function(event) {
     const taskItem = document.querySelector('.dragging');
+    // if taskItem exists and is not being dragged over the doneList
     if (taskItem && !doneList.classList.contains('drag-over')) {
-        todoList.appendChild(taskItem);
+        todoList.appendChild(taskItem); // add item to todo list
     }
+    saveTasks();
 });
 
-// function to clear done list, keeping placeholder text
-function deleteChildren () {
-    let list = document.getElementById('done-list');
-    let tasks = list.querySelectorAll('.task');
-    [...tasks].forEach(c => list.removeChild(c));
-    let placeholder = list.querySelector('.placeholder');
-    placeholder.style.display = 'block'; // Show placeholder
-}
+doneList.addEventListener('dragover', function(event) {
+    event.preventDefault();
+    doneList.classList.add('drag-over');
+});
 
-// if clicked, call delete children
-document.getElementById('clear-done-button').addEventListener('click', function() {
-    deleteChildren();
+doneList.addEventListener('dragleave', function(event) {
+    doneList.classList.remove('drag-over');
+});
+
+doneList.addEventListener('drop', function(event) {
+    const taskItem = document.querySelector('.dragging');
+    const placeholder = doneList.querySelector('.placeholder');
+    if (taskItem && doneList.classList.contains('drag-over')) {
+        doneList.classList.remove('drag-over');
+        doneList.appendChild(taskItem);
+        placeholder.style.display = 'none'; // hide placeholder
+    }
+    saveTasks();
 });
